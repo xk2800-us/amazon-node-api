@@ -12,8 +12,12 @@ router.post('/clerk', async (req, res) => {
     // See: https://clerk.com/docs/reference/webhooks#user.created
     const clerkUserId = event.data?.id;
     const email = event.data?.email_addresses?.[0]?.email_address;
-    if (!clerkUserId || !email) {
-      res.status(400).json({ error: 'Missing Clerk user id or email in webhook payload' });
+    if (!clerkUserId) {
+      res.status(400).json({ error: 'Missing Clerk user id in webhook payload' });
+      return;
+    }
+    if (!email) {
+      res.status(400).json({ error: 'Missing email in webhook payload' });
       return;
     }
     await db.insert(users).values({ clerkUserId, email });
